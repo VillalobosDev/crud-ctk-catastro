@@ -30,7 +30,7 @@ window.geometry("1330x600")
 
 myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-window.iconbitmap(r'C:\Users\Nelson\Desktop\Serv COM & Proyecto\Code\CatastroCRUD\img\img.ico')
+window.iconbitmap(r'C:\Github\crud-ctk-catastro\crud-ctk-catastro\img\img.ico')
 
 # Create a frame for input fields and buttons
 frame = ctk.CTkFrame(window)
@@ -68,7 +68,9 @@ codcatastralEntry.grid(row=7, column=0, padx=5, pady=5, sticky="ew")
 fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidacion", font=placeholder_poppins)
 fechaliquidacionEntry.grid(row=8, column=0, padx=5, pady=5, sticky="ew")
 
-placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, 
+
+register_id = None
+placeholderArray = [register_id, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, 
                     sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
 
 
@@ -102,7 +104,7 @@ my_tree = ttk.Treeview(frame_tree, style="Custom.Treeview", show="headings")
 my_tree.pack(pady=10, padx=10, fill="both", expand=True)
 
 # Define columns
-my_tree['columns'] = ('cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
+my_tree['columns'] = ('register-id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
 
 # Format columns
 for col in my_tree['columns']:

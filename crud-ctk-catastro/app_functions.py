@@ -21,7 +21,7 @@ def connection():
 def read():
     with connection() as conn:  # Use context manager to handle connection
         cursor = conn.cursor()
-        sql = """SELECT cedula, contribuyente, nombreinmueble, rif, sector, 
+        sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, 
                  uso, codcatastral, fechaliquidacion FROM reg ORDER BY fechaliquidacion DESC"""
         cursor.execute(sql)
         results = cursor.fetchall()
@@ -29,15 +29,17 @@ def read():
 
 def refreshTable(my_tree, results=None):
     # Clear existing items in the tree
-    for data in my_tree.get_children():
-        my_tree.delete(data)
+    my_tree.delete(*my_tree.get_children())
 
     # If results are provided, insert them into the tree
     if results:
-        for array in results:
-            my_tree.insert(parent='', index='end', text="", values=array, tag="orow")
+        for i, array in enumerate(results):
+            tag = "evenrow" if i % 2 == 0 else "oddrow"
+            my_tree.insert(parent='', index='end', text="", values=array, tag=tag)
 
-    my_tree.tag_configure('orow', background="#EEEEEE")
+    # Configure row colors
+    my_tree.tag_configure('evenrow', background="#EEEEEE")
+    my_tree.tag_configure('oddrow', background="#FFFFFF") 
 
 def setph(word, num, placeholderArray):
     if num < len(placeholderArray):
@@ -170,17 +172,11 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
 
             # Retrieve values from entry fields
             cedula = cedulaEntry.get().strip()
-            contribuyente = contribuyenteEntry.get().strip()
-            nombreinmueble = nombreinmuebleEntry.get().strip()
-            rif = rifEntry.get().strip()
-            sector = sectorEntry.get().strip()
-            uso = usoEntry.get().strip()
-            codcatastral = codcatastralEntry.get().strip()
-            fechaliquidacion = fechaliquidacionEntry.get().strip()
+            
 
             # If no entry fields are filled, get all records ordered by fechaliquidacion
-            if not any([cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion]):
-                sql = """SELECT cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
+            if not cedula:
+                sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
                          FROM reg ORDER BY fechaliquidacion DESC"""
                 cursor.execute(sql)
                 results = cursor.fetchall()
@@ -188,51 +184,14 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
                 return
 
             # If a cedula is present, retrieve all records associated with that cedula
-            if cedula:
-                sql = """SELECT cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
-                         FROM reg WHERE cedula = %s ORDER BY fechaliquidacion DESC"""
-                cursor.execute(sql, (cedula,))
-                results = cursor.fetchall()
-                refreshTable(my_tree, results)
-                if not results:  # If no results were found
-                    messagebox.showwarning("", "No se encontraron registros para la cédula proporcionada.")
-                return
-            
-            # This section allows flexible, partial searches based 
-            # on any combination of fields the user fills, enabling a custom query without hard-coding each possible combination.
-
-            # # If specific fields are filled, construct the query
-            # fields = {
-            #     'cedula': cedula,
-            #     'contribuyente': contribuyente,
-            #     'nombreinmueble': nombreinmueble,
-            #     'rif': rif,
-            #     'sector': sector,
-            #     'uso': uso,
-            #     'codcatastral': codcatastral,
-            #     'fechaliquidacion': fechaliquidacion
-            # }
-
-            # query_conditions = []
-            # query_values = []
-
-            # for field, value in fields.items():
-            #     if value:  # Only include non-empty fields in the query
-            #         query_conditions.append(f"{field} LIKE %s")
-            #         query_values.append(f'%{value}%')
-
-            # if query_conditions:  # Only run this if there are conditions
-            #     query = "SELECT cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion FROM reg WHERE " + " AND ".join(query_conditions) + " ORDER BY fechaliquidacion DESC"
-            #     cursor.execute(query, query_values)
-            #     results = cursor.fetchall()
-                
-            #     # Clear the treeview and insert new items
-            #     refreshTable(my_tree, results)
-
-            #     if not results:  # If no results were found
-            #         messagebox.showwarning("", "No se encontraron registros.")
-            # else:
-            #     messagebox.showwarning("", "Por favor proporciona al menos un criterio de búsqueda.")
+            sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
+                     FROM reg WHERE cedula = %s ORDER BY fechaliquidacion DESC"""
+            cursor.execute(sql, (cedula,))
+            results = cursor.fetchall()
+            refreshTable(my_tree, results)
+            if not results:  # If no results were found
+                messagebox.showwarning("", "No se encontraron registros para la cédula proporcionada.")
+            return
 
     except Exception as e:
         messagebox.showwarning("", f"An error occurred: {e}")
