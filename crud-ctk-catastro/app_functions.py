@@ -5,6 +5,8 @@ import csv
 from customtkinter import CTkEntry
 from tkinter import ttk
 
+placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación"]
+
 def some_function(my_tree, placeholderArray):
     # Now placeholderArray is defined here and can be used.
     pass
@@ -107,14 +109,15 @@ def update(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEnt
                      SET cedula = %s, contribuyente = %s, nombreinmueble = %s, 
                          rif = %s, sector = %s, uso = %s, codcatastral = %s, 
                          fechaliquidacion = %s 
-                     WHERE cedula = %s"""
+                     WHERE register_id = %s"""
 
             cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion, selectedItemId))
             conn.commit()
 
-        for num in range(len(placeholderArray)):
-            setph('', num, placeholderArray)
-        refreshTable(my_tree)
+        for num in range(min(len(placeholderArray), len(placeholder_texts))):
+            setph(placeholder_texts[num], num, placeholderArray)
+        results = read()
+        refreshTable(my_tree, results)
 
     except Exception as err:
         messagebox.showwarning("", "Un error se produjo: " + str(err))
@@ -145,14 +148,15 @@ def delete(my_tree):
 def select(my_tree, placeholderArray):
     try:
         selectedItem = my_tree.selection()[0]
-        cedula = str(my_tree.item(selectedItem)['values'][0])
-        contribuyente = str(my_tree.item(selectedItem)['values'][1])
-        nombreinmueble = str(my_tree.item(selectedItem)['values'][2])
-        rif = str(my_tree.item(selectedItem)['values'][3])
-        sector = str(my_tree.item(selectedItem)['values'][4])
-        uso = str(my_tree.item(selectedItem)['values'][5])
-        codcatastral = str(my_tree.item(selectedItem)['values'][6])
-        fechaliquidacion = str(my_tree.item(selectedItem)['values'][7])
+        register_id= str(my_tree.item(selectedItem)['values'][0])
+        cedula = str(my_tree.item(selectedItem)['values'][1])
+        contribuyente = str(my_tree.item(selectedItem)['values'][2])
+        nombreinmueble = str(my_tree.item(selectedItem)['values'][3])
+        rif = str(my_tree.item(selectedItem)['values'][4])
+        sector = str(my_tree.item(selectedItem)['values'][5])
+        uso = str(my_tree.item(selectedItem)['values'][6])
+        codcatastral = str(my_tree.item(selectedItem)['values'][7])
+        fechaliquidacion = str(my_tree.item(selectedItem)['values'][8])
 
         setph(cedula, 0, placeholderArray)
         setph(contribuyente, 1, placeholderArray)
@@ -162,8 +166,9 @@ def select(my_tree, placeholderArray):
         setph(uso, 5, placeholderArray)
         setph(codcatastral, 6, placeholderArray)
         setph(fechaliquidacion, 7, placeholderArray)
-    except:
-        messagebox.showwarning("", "Por favor selecciona una columna")
+    except Exception as e:
+        messagebox.showwarning(f"{e}", "Por favor selecciona una columna")
+        print(e)
 
 def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry):
     try:

@@ -65,13 +65,11 @@ usoEntry.grid(row=6, column=0, padx=5, pady=5, sticky="ew")
 codcatastralEntry = ctk.CTkEntry(input_frame, placeholder_text="Cod Catastral", font=placeholder_poppins)
 codcatastralEntry.grid(row=7, column=0, padx=5, pady=5, sticky="ew")
 
-fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidacion", font=placeholder_poppins)
+fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
 fechaliquidacionEntry.grid(row=8, column=0, padx=5, pady=5, sticky="ew")
 
 
-register_id = None
-placeholderArray = [register_id, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, 
-                    sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
+placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
 
 
 # Create a frame to hold the Treeview
@@ -104,7 +102,7 @@ my_tree = ttk.Treeview(frame_tree, style="Custom.Treeview", show="headings")
 my_tree.pack(pady=10, padx=10, fill="both", expand=True)
 
 # Define columns
-my_tree['columns'] = ('register-id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
+my_tree['columns'] = ('register_id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
 
 # Format columns
 for col in my_tree['columns']:
