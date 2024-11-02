@@ -43,42 +43,58 @@ placeholder_poppins = ("poppins", 12, "normal")
 input_frame = ctk.CTkFrame(window)
 input_frame.pack(fill="x", padx=10, pady=10)
 
-# Create input fields with placeholders after the buttons
-cedulaEntry = ctk.CTkEntry(input_frame, placeholder_text="Cedula", font=placeholder_poppins, width=300)
-cedulaEntry.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+def open_save_popup():
+    """Open a popup window to input data for a new register."""
+    popup = ctk.CTkToplevel(window)
+    popup.title("Add New Register")
+    popup.geometry("400x400")
 
-contribuyenteEntry = ctk.CTkEntry(input_frame, placeholder_text="Contribuyente", font=placeholder_poppins)
-contribuyenteEntry.grid(row=2, column=0, padx=5, pady=5, sticky="ew")
+    # Create entry fields in the popup window
+    cedula_popup = ctk.CTkEntry(popup, placeholder_text="Cedula", font=placeholder_poppins, width=300)
+    cedula_popup.pack(padx=5, pady=5)
 
-nombreinmuebleEntry = ctk.CTkEntry(input_frame, placeholder_text="Nombre Inmueble", font=placeholder_poppins)
-nombreinmuebleEntry.grid(row=3, column=0, padx=5, pady=5, sticky="ew")
+    contribuyente_popup = ctk.CTkEntry(popup, placeholder_text="Contribuyente", font=placeholder_poppins)
+    contribuyente_popup.pack(padx=5, pady=5)
 
-rifEntry = ctk.CTkEntry(input_frame, placeholder_text="RIF", font=placeholder_poppins)
-rifEntry.grid(row=4, column=0, padx=5, pady=5, sticky="ew")
+    nombreinmueble_popup = ctk.CTkEntry(popup, placeholder_text="Nombre Inmueble", font=placeholder_poppins)
+    nombreinmueble_popup.pack(padx=5, pady=5)
 
-sectorEntry = ctk.CTkEntry(input_frame, placeholder_text="Sector", font=placeholder_poppins)
-sectorEntry.grid(row=5, column=0, padx=5, pady=5, sticky="ew")
+    rif_popup = ctk.CTkEntry(popup, placeholder_text="RIF", font=placeholder_poppins)
+    rif_popup.pack(padx=5, pady=5)
 
-usoEntry = ctk.CTkEntry(input_frame, placeholder_text="Uso", font=placeholder_poppins)
-usoEntry.grid(row=6, column=0, padx=5, pady=5, sticky="ew")
+    sector_popup = ctk.CTkEntry(popup, placeholder_text="Sector", font=placeholder_poppins)
+    sector_popup.pack(padx=5, pady=5)
 
-codcatastralEntry = ctk.CTkEntry(input_frame, placeholder_text="Cod Catastral", font=placeholder_poppins)
-codcatastralEntry.grid(row=7, column=0, padx=5, pady=5, sticky="ew")
+    uso_popup = ctk.CTkEntry(popup, placeholder_text="Uso", font=placeholder_poppins)
+    uso_popup.pack(padx=5, pady=5)
 
-fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
-fechaliquidacionEntry.grid(row=8, column=0, padx=5, pady=5, sticky="ew")
+    codcatastral_popup = ctk.CTkEntry(popup, placeholder_text="Cod Catastral", font=placeholder_poppins)
+    codcatastral_popup.pack(padx=5, pady=5)
 
+    fechaliquidacion_popup = ctk.CTkEntry(popup, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
+    fechaliquidacion_popup.pack(padx=5, pady=5)
 
-placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
+    # Array of popup entries to pass to save function
+    popup_placeholder_array = [
+        cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup
+    ]
 
+    # Save button within popup
+    def save_popup_data():
+        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, popup_placeholder_array, my_tree)
+        popup.destroy()  # Close popup after saving
+
+    save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins)
+    save_button.pack(pady=10)
 
 # Create a frame to hold the Treeview
 frame_tree = ctk.CTkFrame(window, fg_color='white', width=580, height=360)
 frame_tree.pack(pady=10, padx=10, expand=True, fill="both")  # Adjusted padding
 
 # Define buttons with text and appropriate commands
+# Define buttons with text and appropriate commands
 buttons = [
-    ("Agregar", lambda: save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree)),
+    ("Agregar", open_save_popup),  # Change this to open the popup
     ("Actualizar", lambda: update(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
     ("Seleccionar", lambda: select(my_tree, placeholderArray)),
@@ -86,6 +102,7 @@ buttons = [
     ("Limpiar", lambda: clear(placeholderArray)),
     ("Exportar a Excel", lambda: exportExcel())
 ]
+
 
 # Create the buttons in a loop
 for i, (text, command) in enumerate(buttons):
