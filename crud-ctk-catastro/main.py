@@ -68,9 +68,7 @@ codcatastralEntry.grid(row=7, column=0, padx=5, pady=5, sticky="ew")
 fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
 fechaliquidacionEntry.grid(row=8, column=0, padx=5, pady=5, sticky="ew")
 
-
 placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
-
 
 # Create a frame to hold the Treeview
 frame_tree = ctk.CTkFrame(window, fg_color='white', width=580, height=360)
@@ -78,7 +76,8 @@ frame_tree.pack(pady=10, padx=10, expand=True, fill="both")  # Adjusted padding
 
 # Define buttons with text and appropriate commands
 buttons = [
-    ("Agregar", lambda: save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree)),
+    ("Agregar", open_save_popup),
+    #("Agregar", lambda: save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree)),
     ("Actualizar", lambda: update(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
     ("Seleccionar", lambda: select(my_tree, placeholderArray)),

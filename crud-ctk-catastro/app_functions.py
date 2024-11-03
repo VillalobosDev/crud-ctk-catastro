@@ -1,4 +1,4 @@
-
+import customtkinter as ctk
 import pymysql
 from tkinter import messagebox
 import csv
@@ -6,6 +6,8 @@ from customtkinter import CTkEntry
 from tkinter import ttk
 
 placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación"]
+button_poppins = ("poppins", 16, "bold") 
+placeholder_poppins = ("poppins", 12, "normal") 
 
 def some_function(my_tree, placeholderArray):
     # Now placeholderArray is defined here and can be used.
@@ -222,3 +224,49 @@ def exportExcel():
             messagebox.showinfo("Exportación Completa", "Los registros han sido exportados a 'registros.csv'")
     except Exception as e:
         messagebox.showwarning("", f"Error al exportar: {str(e)}")
+
+def open_save_popup():
+    """Open a popup window to input data for a new register."""
+    window = ctk.CTk()
+    popup = ctk.CTkToplevel(window)
+    popup.title("Add New Register")
+    popup.geometry("400x400")
+
+    # Create entry fields in the popup window
+    cedula_popup = ctk.CTkEntry(popup, placeholder_text="Cedula", font=placeholder_poppins, width=300)
+    cedula_popup.pack(padx=5, pady=5)
+
+    contribuyente_popup = ctk.CTkEntry(popup, placeholder_text="Contribuyente", font=placeholder_poppins)
+    contribuyente_popup.pack(padx=5, pady=5)
+
+    nombreinmueble_popup = ctk.CTkEntry(popup, placeholder_text="Nombre Inmueble", font=placeholder_poppins)
+    nombreinmueble_popup.pack(padx=5, pady=5)
+
+    rif_popup = ctk.CTkEntry(popup, placeholder_text="RIF", font=placeholder_poppins)
+    rif_popup.pack(padx=5, pady=5)
+
+    sector_popup = ctk.CTkEntry(popup, placeholder_text="Sector", font=placeholder_poppins)
+    sector_popup.pack(padx=5, pady=5)
+
+    uso_popup = ctk.CTkEntry(popup, placeholder_text="Uso", font=placeholder_poppins)
+    uso_popup.pack(padx=5, pady=5)
+
+    codcatastral_popup = ctk.CTkEntry(popup, placeholder_text="Cod Catastral", font=placeholder_poppins)
+    codcatastral_popup.pack(padx=5, pady=5)
+
+    fechaliquidacion_popup = ctk.CTkEntry(popup, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
+    fechaliquidacion_popup.pack(padx=5, pady=5)
+
+    # Array of popup entries to pass to save function
+    popup_placeholder_array = [
+        cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup
+    ]
+
+    # Save button within popup
+    def save_popup_data():
+        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, popup_placeholder_array, my_tree)
+        popup.destroy()  # Close popup after saving
+
+    save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins)
+    save_button.pack(pady=10)
+
