@@ -81,49 +81,6 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
     except Exception as e:
         messagebox.showwarning("", "Se produjo un error: " + str(e))
 
-# def update(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray):
-#     if not my_tree.selection():
-#         messagebox.showwarning("", "Por favor selecciona un elemento para actualizar.")
-#         return
-
-#     selectedItem = my_tree.selection()[0]
-#     item_values = my_tree.item(selectedItem)['values']
-
-#     if not item_values or len(item_values) < 8:
-#         messagebox.showwarning("", "El elemento seleccionado no tiene valores completos.")
-#         return
-
-#     selectedItemId = str(item_values[0])
-
-#     cedula = cedulaEntry.get().strip()
-#     contribuyente = contribuyenteEntry.get().strip()
-#     nombreinmueble = nombreinmuebleEntry.get().strip()
-#     rif = rifEntry.get().strip()
-#     sector = sectorEntry.get().strip()
-#     uso = usoEntry.get().strip()
-#     codcatastral = codcatastralEntry.get().strip()
-#     fechaliquidacion = fechaliquidacionEntry.get().strip()
-
-#     try:
-#         with connection() as conn:
-#             cursor = conn.cursor()
-#             sql = """UPDATE reg 
-#                      SET cedula = %s, contribuyente = %s, nombreinmueble = %s, 
-#                          rif = %s, sector = %s, uso = %s, codcatastral = %s, 
-#                          fechaliquidacion = %s 
-#                      WHERE register_id = %s"""
-
-#             cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion, selectedItemId))
-#             conn.commit()
-
-#         for num in range(min(len(placeholderArray), len(placeholder_texts))):
-#             setph(placeholder_texts[num], num, placeholderArray)
-#         results = read()
-#         refreshTable(my_tree, results)
-
-#     except Exception as err:
-#         messagebox.showwarning("", "Un error se produjo: " + str(err))
-
 def delete(my_tree):
     if not my_tree.selection():
         messagebox.showwarning("", "Por favor selecciona fila")
@@ -146,38 +103,6 @@ def delete(my_tree):
             refreshTable(my_tree)
     except Exception as err:
         messagebox.showwarning("", f"Un error se produjo: {err}")
-
-# def select(my_tree, placeholderArray):
-#     try:
-#         selected_items = my_tree.selection()
-#         if len(selected_items) != 1:
-#             messagebox.showwarning("Selection Error", "Please select only one row for updating.")
-#             return
-
-
-#         selectedItem = my_tree.selection()[0]
-#         cedula = str(my_tree.item(selectedItem)['values'][1])
-#         contribuyente = str(my_tree.item(selectedItem)['values'][2])
-#         nombreinmueble = str(my_tree.item(selectedItem)['values'][3])
-#         rif = str(my_tree.item(selectedItem)['values'][4])
-#         sector = str(my_tree.item(selectedItem)['values'][5])
-#         uso = str(my_tree.item(selectedItem)['values'][6])
-#         codcatastral = str(my_tree.item(selectedItem)['values'][7])
-#         fechaliquidacion = str(my_tree.item(selectedItem)['values'][8])
-
-#         setph(cedula, 0, placeholderArray)
-#         setph(contribuyente, 1, placeholderArray)
-#         setph(nombreinmueble, 2, placeholderArray)
-#         setph(rif, 3, placeholderArray)
-#         setph(sector, 4, placeholderArray)
-#         setph(uso, 5, placeholderArray)
-#         setph(codcatastral, 6, placeholderArray)
-#         setph(fechaliquidacion, 7, placeholderArray)
-
-#         open_update_modal(my_tree, placeholderArray, selectedItem)
-#     except Exception as e:
-#         messagebox.showwarning(f"{e}", "Por favor selecciona una columna")
-#         print(e)
 
 def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry):
     try:

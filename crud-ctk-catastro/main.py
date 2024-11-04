@@ -41,32 +41,24 @@ button_poppins = ("poppins", 16, "bold")
 placeholder_poppins = ("poppins", 12, "normal") 
 
 input_frame = ctk.CTkFrame(window)
-input_frame.pack(fill="x", padx=10, pady=10)
 
 # Create input fields with placeholders after the buttons
-cedulaEntry = ctk.CTkEntry(input_frame, placeholder_text="Cedula", font=placeholder_poppins, width=300)
-cedulaEntry.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+cedulaEntry = ctk.CTkEntry(frame, placeholder_text="Introduce la cedula", font=placeholder_poppins, width=200)
+cedulaEntry.grid(row=0, column=6, padx=5, pady=5, sticky="ew")
 
 contribuyenteEntry = ctk.CTkEntry(input_frame, placeholder_text="Contribuyente", font=placeholder_poppins)
-contribuyenteEntry.grid(row=2, column=0, padx=5, pady=5, sticky="ew")
 
 nombreinmuebleEntry = ctk.CTkEntry(input_frame, placeholder_text="Nombre Inmueble", font=placeholder_poppins)
-nombreinmuebleEntry.grid(row=3, column=0, padx=5, pady=5, sticky="ew")
 
 rifEntry = ctk.CTkEntry(input_frame, placeholder_text="RIF", font=placeholder_poppins)
-rifEntry.grid(row=4, column=0, padx=5, pady=5, sticky="ew")
 
 sectorEntry = ctk.CTkEntry(input_frame, placeholder_text="Sector", font=placeholder_poppins)
-sectorEntry.grid(row=5, column=0, padx=5, pady=5, sticky="ew")
 
 usoEntry = ctk.CTkEntry(input_frame, placeholder_text="Uso", font=placeholder_poppins)
-usoEntry.grid(row=6, column=0, padx=5, pady=5, sticky="ew")
 
 codcatastralEntry = ctk.CTkEntry(input_frame, placeholder_text="Cod Catastral", font=placeholder_poppins)
-codcatastralEntry.grid(row=7, column=0, padx=5, pady=5, sticky="ew")
 
 fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
-fechaliquidacionEntry.grid(row=8, column=0, padx=5, pady=5, sticky="ew")
 
 placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
 
@@ -77,13 +69,11 @@ frame_tree.pack(pady=10, padx=10, expand=True, fill="both")  # Adjusted padding
 # Define buttons with text and appropriate commands
 buttons = [
     ("Agregar", open_save_popup),
-    #("Agregar", lambda: save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree)),
     ("Actualizar", lambda: open_update_modal(my_tree, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
-    #("Seleccionar", lambda: select(my_tree, placeholderArray)),
-    ("Buscar", lambda: find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry)),
     ("Limpiar", lambda: clear(placeholderArray)),
-    ("Exportar a Excel", lambda: exportExcel())
+    ("Exportar a Excel", lambda: exportExcel()),
+    ("Buscar", lambda: find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry))
 ]
 
 # Create the buttons in a loop
@@ -108,8 +98,6 @@ for col in my_tree['columns']:
     my_tree.heading(col, text=col.capitalize(), anchor='center')  # Ensure anchor alignment
     my_tree.column(col, anchor='center')
 
-#my_tree.bind('<ButtonRelease-1>', lambda event: select(my_tree, placeholderArray))  # Bind selection event
-
 some_function(my_tree, placeholderArray)
 
 # Draw a rounded rectangle on the frame_tree
@@ -117,8 +105,16 @@ canvas = ctk.CTkCanvas(frame_tree, width=0, height=0, highlightthickness=0, bg='
 canvas.place(x=0, y=0)  # Position the canvas at the top-left of the frame
 create_rounded_rectangle(canvas, 10, 10, 0, 0, r=5, fill='lightgray', outline='black')
 
-# Refresh the table
-refreshTable(my_tree)
+# Refresh the table to show db results
+with connection() as conn:
+    cursor = conn.cursor()
+    sql = '''
+    SELECT * FROM reg ORDER BY fechaliquidacion DESC   
+    '''
+    cursor.execute(sql)
+    results = cursor.fetchall()
+
+    refreshTable(my_tree, results)
 
 window.mainloop()
 
