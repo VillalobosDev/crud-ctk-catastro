@@ -9,7 +9,6 @@ import ctypes
 from app_functions import *
 
 def create_rounded_rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
-    """Draw a rounded rectangle on the specified canvas."""
     points = [
         x0 + r, y0,   # Top-left corner
         x1 - r, y0,   # Top-right corner
@@ -22,19 +21,19 @@ def create_rounded_rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
     ]
     return canvas.create_polygon(points, **kwargs, smooth=True)
 
-# Create the main window using customtkinter
+# Creando la ventana
 window = ctk.CTk()
 window.title("CRUD Catastro")
 window.geometry("1330x600")
-#window.resizable(width=False,height=False)
 
 myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 window.iconbitmap(r'C:\Github\crud-ctk-catastro\crud-ctk-catastro\img\img.ico')
 
-# Create a frame for input fields and buttons
+# Creado el frame donde iran los botones
 frame = ctk.CTkFrame(window)
 frame.pack(fill="x", padx=10, pady=10)
+frame.grid_columnconfigure(6, weight=1)
 
 # Buttons style
 button_poppins = ("poppins", 16, "bold") 
@@ -42,9 +41,9 @@ placeholder_poppins = ("poppins", 12, "normal")
 
 input_frame = ctk.CTkFrame(window)
 
-# Create input fields with placeholders after the buttons
+# Creando inputs despues de los botones, para las ventanas modales
 cedulaEntry = ctk.CTkEntry(frame, placeholder_text="Introduce la cedula", font=placeholder_poppins, width=200)
-cedulaEntry.grid(row=0, column=6, padx=5, pady=5, sticky="ew")
+cedulaEntry.grid(row=0, column=7, padx=7, pady=5, sticky="e")
 
 contribuyenteEntry = ctk.CTkEntry(input_frame, placeholder_text="Contribuyente", font=placeholder_poppins)
 
@@ -62,50 +61,55 @@ fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquid
 
 placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
 
-# Create a frame to hold the Treeview
+# Frame para el treeview (Vista de los registros)
 frame_tree = ctk.CTkFrame(window, fg_color='white', width=580, height=360)
-frame_tree.pack(pady=10, padx=10, expand=True, fill="both")  # Adjusted padding
+frame_tree.pack(pady=10, padx=10, expand=True, fill="both")  
 
-# Define buttons with text and appropriate commands
+# Definiendo botones con sus comandos
 buttons = [
     ("Agregar", open_save_popup),
     ("Actualizar", lambda: open_update_modal(my_tree, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
     ("Limpiar", lambda: clear(placeholderArray)),
-    ("Exportar a Excel", lambda: exportExcel()),
-    ("Buscar", lambda: find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry))
+    ("Exportar a Excel", lambda: exportExcel())
 ]
 
-# Create the buttons in a loop
+# Creamos los botones con un blucle for
 for i, (text, command) in enumerate(buttons):
     ctk.CTkButton(frame, text=text, command=command, font=button_poppins).grid(row=0, column=i, padx=5, pady=5, sticky="w")
 
-# Create a style for the Treeview
+# Creamos a parte el boton de busqueda para adjuntar disntintas propiedades
+ctk.CTkButton(frame, text="Buscar", command= lambda: find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry), font=button_poppins).grid(row=0, column=6, padx=5, pady=5, sticky="e")
+
+# Creando estilo para el treeview
 style = ttk.Style()
-style.configure("Custom.Treeview", font=("Poppins", 12), rowheight=25)  # Set the desired font and size for the treeview
-style.configure("Custom.Treeview.Heading", font=("Poppins", 14, "bold"))  # Set header font size and style
+style.configure("Custom.Treeview", font=("Poppins", 12), rowheight=25)  
+style.configure("Custom.Treeview.Heading", font=("Poppins", 14, "bold")) 
 
 
-# Create Treeview for displaying records with the custom style
+# Creando el treeview para mostrar los registros
 my_tree = ttk.Treeview(frame_tree, style="Custom.Treeview", show="headings")
 my_tree.pack(pady=10, padx=10, fill="both", expand=True)
 
-# Define columns
+# Definiendo las columnas 
 my_tree['columns'] = ('register_id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
 
-# Format columns
+# Formateando columnas
 for col in my_tree['columns']:
-    my_tree.heading(col, text=col.capitalize(), anchor='center')  # Ensure anchor alignment
+    my_tree.heading(col, text=col.capitalize(), anchor='center')  # Con el metodo de string capitalize() mostramos el texto en mayusculas
     my_tree.column(col, anchor='center')
 
-some_function(my_tree, placeholderArray)
+#some_function(my_tree, placeholderArray)
 
-# Draw a rounded rectangle on the frame_tree
+# Llamamos la funcion para crear un canvas alrededor del treeview y darle un aspecto redondeado
+# Nativamente desde tkinter o customtkinter no se encuentran opciones similares
+# Y esta fue nuestra forma de darle el efecto border radius que da un toque de clase al treeview
+
 canvas = ctk.CTkCanvas(frame_tree, width=0, height=0, highlightthickness=0, bg='white')
-canvas.place(x=0, y=0)  # Position the canvas at the top-left of the frame
+canvas.place(x=0, y=0)  # Posicionamos el canvas
 create_rounded_rectangle(canvas, 10, 10, 0, 0, r=5, fill='lightgray', outline='black')
 
-# Refresh the table to show db results
+# Llamamos los registros de la base de datos
 with connection() as conn:
     cursor = conn.cursor()
     sql = '''

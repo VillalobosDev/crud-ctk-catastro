@@ -9,9 +9,9 @@ placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Secto
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 
-def some_function(my_tree, placeholderArray):
-    # Now placeholderArray is defined here and can be used
-    pass
+# def some_function(my_tree, placeholderArray):
+#     # Now placeholderArray is defined here and can be used
+#     pass
 
 # Function to connect to the database
 def connection():
