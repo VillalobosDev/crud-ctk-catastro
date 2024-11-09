@@ -67,10 +67,10 @@ frame_tree.pack(pady=10, padx=10, expand=True, fill="both")
 
 # Definiendo botones con sus comandos
 buttons = [
-    ("Agregar", open_save_popup),
+    ("Agregar", lambda: open_save_popup(my_tree)),
     ("Actualizar", lambda: open_update_modal(my_tree, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
-    ("Limpiar", lambda: clear(placeholderArray)),
+    #("Limpiar", lambda: clear(placeholderArray)),
     ("Exportar a Excel", lambda: exportExcel())
 ]
 
@@ -99,7 +99,6 @@ for col in my_tree['columns']:
     my_tree.heading(col, text=col.capitalize(), anchor='center')  # Con el metodo de string capitalize() mostramos el texto en mayusculas
     my_tree.column(col, anchor='center')
 
-#some_function(my_tree, placeholderArray)
 
 # Llamamos la funcion para crear un canvas alrededor del treeview y darle un aspecto redondeado
 # Nativamente desde tkinter o customtkinter no se encuentran opciones similares

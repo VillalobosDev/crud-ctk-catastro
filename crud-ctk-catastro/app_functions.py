@@ -9,10 +9,6 @@ placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Secto
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 
-# def some_function(my_tree, placeholderArray):
-#     # Now placeholderArray is defined here and can be used
-#     pass
-
 # Function to connect to the database
 def connection():
     return pymysql.connect(
@@ -76,14 +72,16 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
 
         for num in range(len(placeholderArray)):
             setph('', num, placeholderArray)
-        refreshTable(my_tree)
+        results = read()
+        refreshTable(my_tree, results)
+        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente")
 
     except Exception as e:
         messagebox.showwarning("", "Se produjo un error: " + str(e))
 
 def delete(my_tree):
     if not my_tree.selection():
-        messagebox.showwarning("", "Por favor selecciona fila")
+        messagebox.showwarning("", "Por favor selecciona una fila")
         return
 
     decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?")
@@ -136,10 +134,6 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
         messagebox.showwarning("", f"An error occurred: {e}")
         print(e)
 
-def clear(placeholderArray):
-    for num in range(len(placeholderArray)):
-        setph('', num, placeholderArray)
-
 def exportExcel():
     try:
         with connection() as conn:
@@ -161,7 +155,7 @@ def exportExcel():
 ######################################### Pop-up save window / Modal###########################################################
 ###########################################################################################################################################
 
-def open_save_popup():
+def open_save_popup(my_tree):
     """Open a popup window to input data for a new register."""
     window = ctk.CTk()
     popup = ctk.CTkToplevel(window)
@@ -200,9 +194,9 @@ def open_save_popup():
     ]
 
     # Save button within popup
-    def save_popup_data(my_tree):
+    def save_popup_data():
         save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, popup_placeholder_array, my_tree)
-        #messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")
+        #1messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")  
         popup.destroy()  # Close popup after saving
 
     save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins, width=380)
@@ -213,6 +207,10 @@ def open_save_popup():
 ###########################################################################################################################################
 
 def open_update_modal(my_tree, placeholderArray):
+    if not my_tree.selection():
+        messagebox.showwarning("", "Por favor selecciona fila")
+        return
+
     selectedItem = my_tree.selection()[0]
     item_id = selectedItem
     values = my_tree.item(selectedItem)['values']
@@ -253,6 +251,9 @@ def open_update_modal(my_tree, placeholderArray):
             '''
             cursor.execute(sql,(*updated_values, my_tree.item(item_id)['values'][0]))
             conn.commit()
+        results = read()
+        refreshTable(my_tree, results)
+        messagebox.showinfo(title="Actualización de registro",message="Registro actualizado exitosamente")
         modal.destroy()
 
     update_button = ctk.CTkButton(modal, text="Actualizar", command=update_record)
