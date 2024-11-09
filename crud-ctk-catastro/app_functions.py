@@ -202,6 +202,7 @@ def open_save_popup():
     # Save button within popup
     def save_popup_data(my_tree):
         save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, popup_placeholder_array, my_tree)
+        #messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")
         popup.destroy()  # Close popup after saving
 
     save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins, width=380)
