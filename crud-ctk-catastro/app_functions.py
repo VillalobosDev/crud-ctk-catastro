@@ -89,22 +89,22 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
 
         # for num in range(len(placeholderArray)):
         #     setph('', num, placeholderArray)
-        results = read() # Llamamos los registros de la bd para mostrarlos en el tree
+        results = read() # Llamamos los registros de la bd para mostrarlos en el tree.
         refreshTable(my_tree, results)
-        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente") # Pop-up para confirmar que se guardo el registro
+        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente") # Pop-up para confirmar que se guardo el registro.
 
     except Exception as e:
-        messagebox.showwarning("", "Se produjo un error: " + str(e)) # Pop-up para mostrar error
+        messagebox.showwarning("", "Se produjo un error: " + str(e)) # Pop-up para mostrar error.
 
 def delete(my_tree):
 
 
 
     if not my_tree.selection():
-        messagebox.showwarning("", "Por favor selecciona una fila") # Si no hay un registro seleccionado mostramos un pop-up y detenemos la funcion
+        messagebox.showwarning("", "Por favor selecciona una fila") # Si no hay un registro seleccionado mostramos un pop-up y detenemos la funcion.
         return
 
-    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?") # Verificamos si el usuario esta seguro de eliminar el registro
+    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?") # Verificamos si el usuario esta seguro de eliminar el registro.
     if decision != 'yes':
         return
 
