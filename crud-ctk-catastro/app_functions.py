@@ -2,8 +2,6 @@ import customtkinter as ctk
 import pymysql
 from tkinter import messagebox
 import csv
-from customtkinter import CTkEntry
-from tkinter import ttk
 
 placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación"]
 button_poppins = ("poppins", 16, "bold") 
