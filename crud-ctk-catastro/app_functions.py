@@ -9,7 +9,7 @@ placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Secto
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 
-# Funcion para establecer la conexion
+# Funcion para establecer la conexion con la db
 
 def connection():
     return pymysql.connect(
@@ -50,14 +50,9 @@ def refreshTable(my_tree, results=None):
     my_tree.tag_configure('evenrow', background="#EEEEEE")
     my_tree.tag_configure('oddrow', background="#FFFFFF") 
 
-# def setph(word, num, placeholderArray):
+# Funcion para guardar los datos en la db
 
-#     if num < len(placeholderArray):
-#         entry = placeholderArray[num]
-#         entry.delete(0, 'end')  # Clear the current text
-#         entry.insert(0, word)
-
-def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree):
+def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, my_tree):
 
     # Obtenemos los datos de los placeholder/entry's
 
@@ -87,53 +82,56 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
             cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion))
             conn.commit()
 
-        # for num in range(len(placeholderArray)):
-        #     setph('', num, placeholderArray)
         results = read() # Llamamos los registros de la bd para mostrarlos en el tree.
         refreshTable(my_tree, results)
-        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente") # Pop-up para confirmar que se guardo el registro.
+        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente") # Pop-up para confirmar que se guardo el registro
 
     except Exception as e:
-        messagebox.showwarning("", "Se produjo un error: " + str(e)) # Pop-up para mostrar error.
+        messagebox.showwarning("", "Se produjo un error: " + str(e)) # Pop-up para mostrar error
+
+# Funcion para eliminar registro seleccionado del tree
 
 def delete(my_tree):
 
-
-
     if not my_tree.selection():
-        messagebox.showwarning("", "Por favor selecciona una fila") # Si no hay un registro seleccionado mostramos un pop-up y detenemos la funcion.
+        messagebox.showwarning("", "Por favor selecciona una fila") # Si no hay un registro seleccionado mostramos un pop-up y detenemos la funcion
         return
 
-    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?") # Verificamos si el usuario esta seguro de eliminar el registro.
+    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?") # Verificamos si el usuario esta seguro de eliminar el registro
     if decision != 'yes':
         return
 
-    selectedItem = my_tree.selection()[0]
-    cedula = my_tree.selection()[1]
-    name = my_tree.selection()[2]
-    register_id = str(my_tree.item(selectedItem)['values'][0])
-    print(f"{cedula} {name}")    
+    selectedItem = my_tree.selection()[0] # Guardamos la seleccion del registro en una variable, para acceder a sus valores
+    # Seleccionamos los valores para ejecutar el codigo
+    cedula = str(my_tree.item(selectedItem)['values'][1]) # Cedula
+    name = str(my_tree.item(selectedItem)['values'][2]) # Nombre
+    register_id = str(my_tree.item(selectedItem)['values'][0]) # Id registro
+    # print(f"{cedula} {name}")    
     try:
         with connection() as conn:
             cursor = conn.cursor()
-            sql = "DELETE FROM reg WHERE cedula = %s"
+            sql = "DELETE FROM reg WHERE register_id = %s" # Eliminaremos el registro donde coincida el id registro seleccionado con el de la db
             cursor.execute(sql, (register_id,))
             conn.commit()
-            messagebox.showinfo("", "Se elimino el registro correctamente")
-            refreshTable(my_tree)
+            messagebox.showinfo(title="Registro eliminado", message=f"Se elimino el registro de '{name}'-'{cedula}' correctamente") # Pop-up mostrando de quien fue el registro eliminado
+            results = read()
+            refreshTable(my_tree, results)
     except Exception as err:
         messagebox.showwarning("", f"Un error se produjo: {err}")
+
+# Funcion para buscar filtrando por cedula
+# Variables no utilizadas se pretender orientar en un futuro para realizar filtros de busqueda
 
 def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry):
     try:
         with connection() as conn:
             cursor = conn.cursor()
 
-            # Retrieve values from entry fields
+            # Obtenemos la cedula de la barra de busqueda
             cedula = cedulaEntry.get().strip()
             
 
-            # If no entry fields are filled, get all records ordered by fechaliquidacion
+            # Si no se provee la cedula, devuelve todos los registro de la db
             if not cedula:
                 sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
                          FROM reg ORDER BY fechaliquidacion DESC"""
@@ -142,19 +140,22 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
                 refreshTable(my_tree, results)
                 return
 
-            # If a cedula is present, retrieve all records associated with that cedula
+            # Si se provee una cedula devuelve unicamene que los registros asociados con esa cedula
             sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
                      FROM reg WHERE cedula = %s ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql, (cedula,))
-            results = cursor.fetchall()
+
+            results = cursor.fetchall
             refreshTable(my_tree, results)
-            if not results:  # If no results were found
+            if not results:  # Si no hay resultados
                 messagebox.showwarning("", "No se encontraron registros para la cédula proporcionada.")
             return
 
     except Exception as e:
         messagebox.showwarning("", f"An error occurred: {e}")
         print(e)
+
+# Funcion para exportar a excel
 
 def exportExcel():
     try:
@@ -175,6 +176,7 @@ def exportExcel():
 
 ###########################################################################################################################################
 ######################################### Pop-up save window / Modal###########################################################
+######################################### Ventana modal para guardar###########################################################
 ###########################################################################################################################################
 
 def open_save_popup(my_tree):
@@ -226,6 +228,7 @@ def open_save_popup(my_tree):
 
 ###########################################################################################################################################
 ######################################### Pop-up update window / Modal###########################################################
+######################################### Ventana modal para actualizar###########################################################
 ###########################################################################################################################################
 
 def open_update_modal(my_tree, placeholderArray):

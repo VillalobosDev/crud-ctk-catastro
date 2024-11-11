@@ -1,14 +1,9 @@
 import customtkinter as ctk
 from tkinter import ttk
-from tkinter import messagebox
-import tkinter.font as tkFont  
-import pymysql
-import csv
-from datetime import datetime
 import ctypes
 from app_functions import *
 
-def create_rounded_rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
+def rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
     points = [
         x0 + r, y0,   # Top-left corner
         x1 - r, y0,   # Top-right corner
@@ -26,7 +21,7 @@ window = ctk.CTk()
 window.title("CRUD Catastro")
 window.geometry("1330x600")
 
-myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary string
+myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary st
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 window.iconbitmap(r'C:\Github\crud-ctk-catastro\crud-ctk-catastro\img\img.ico')
 
@@ -70,7 +65,6 @@ buttons = [
     ("Agregar", lambda: open_save_popup(my_tree)),
     ("Actualizar", lambda: open_update_modal(my_tree, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
-    #("Limpiar", lambda: clear(placeholderArray)),
     ("Exportar a Excel", lambda: exportExcel())
 ]
 
@@ -106,7 +100,7 @@ for col in my_tree['columns']:
 
 canvas = ctk.CTkCanvas(frame_tree, width=0, height=0, highlightthickness=0, bg='white')
 canvas.place(x=0, y=0)  # Posicionamos el canvas
-create_rounded_rectangle(canvas, 10, 10, 0, 0, r=5, fill='lightgray', outline='black')
+rectangle(canvas, 10, 10, 0, 0, r=5, fill='lightgray', outline='black')
 
 # Llamamos los registros de la base de datos
 with connection() as conn:
