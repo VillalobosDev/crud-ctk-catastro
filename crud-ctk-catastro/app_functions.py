@@ -9,7 +9,8 @@ placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Secto
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 
-# Function to connect to the database
+# Funcion para establecer la conexion
+
 def connection():
     return pymysql.connect(
         host='localhost',
@@ -18,8 +19,10 @@ def connection():
         db='regdb'
     )
 
+# Funcion para leer la base de datos
+
 def read():
-    with connection() as conn:  # Use context manager to handle connection
+    with connection() as conn:  
         cursor = conn.cursor()
         sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, 
                  uso, codcatastral, fechaliquidacion FROM reg ORDER BY fechaliquidacion DESC"""
@@ -27,27 +30,37 @@ def read():
         results = cursor.fetchall()
     return results
 
+# Funcion para mostrar los registros de la base de datos
+
 def refreshTable(my_tree, results=None):
-    # Clear existing items in the tree
+    
+    # Limpiamos los elementos existentes en el tree
     my_tree.delete(*my_tree.get_children())
 
-    # If results are provided, insert them into the tree
+
+    # Si se añadio un valor para results en el llamado de la funcion se insertan en el tree
+    # Donde results usualmente en un read() de la db
+    
     if results:
         for i, array in enumerate(results):
-            tag = "evenrow" if i % 2 == 0 else "oddrow"
+            tag = "evenrow" if i % 2 == 0 else "oddrow" # Altenar los colores establecidos en my_tree.tag_configure
             my_tree.insert(parent='', index='end', text="", values=array, tag=tag)
 
-    # Configure row colors
+    # Configuracion para las filas de registros
     my_tree.tag_configure('evenrow', background="#EEEEEE")
     my_tree.tag_configure('oddrow', background="#FFFFFF") 
 
-def setph(word, num, placeholderArray):
-    if num < len(placeholderArray):
-        entry = placeholderArray[num]
-        entry.delete(0, 'end')  # Clear the current text
-        entry.insert(0, word)
+# def setph(word, num, placeholderArray):
+
+#     if num < len(placeholderArray):
+#         entry = placeholderArray[num]
+#         entry.delete(0, 'end')  # Clear the current text
+#         entry.insert(0, word)
 
 def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, placeholderArray, my_tree):
+
+    # Obtenemos los datos de los placeholder/entry's
+
     cedula = cedulaEntry.get().strip()
     contribuyente = contribuyenteEntry.get().strip()
     nombreinmueble = nombreinmuebleEntry.get().strip()
@@ -57,9 +70,13 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
     codcatastral = codcatastralEntry.get().strip()
     fechaliquidacion = fechaliquidacionEntry.get().strip()
 
+    # Verificamos si todos los campos estan llenos
+
     if not all([cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion]):
         messagebox.showwarning("", "Llena todos los formularios")
         return
+
+    # Si los campos estan llenos guardamos los datos en la db como un nuevo registro
 
     try:
         with connection() as conn:
@@ -70,32 +87,37 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
             cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion))
             conn.commit()
 
-        for num in range(len(placeholderArray)):
-            setph('', num, placeholderArray)
-        results = read()
+        # for num in range(len(placeholderArray)):
+        #     setph('', num, placeholderArray)
+        results = read() # Llamamos los registros de la bd para mostrarlos en el tree
         refreshTable(my_tree, results)
-        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente")
+        messagebox.showinfo(title="Registro Guardado", message="Registro guardado exitosamente") # Pop-up para confirmar que se guardo el registro
 
     except Exception as e:
-        messagebox.showwarning("", "Se produjo un error: " + str(e))
+        messagebox.showwarning("", "Se produjo un error: " + str(e)) # Pop-up para mostrar error
 
 def delete(my_tree):
+
+
+
     if not my_tree.selection():
-        messagebox.showwarning("", "Por favor selecciona una fila")
+        messagebox.showwarning("", "Por favor selecciona una fila") # Si no hay un registro seleccionado mostramos un pop-up y detenemos la funcion
         return
 
-    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?")
+    decision = messagebox.askquestion("", "Seguro de eliminar los datos seleccionados?") # Verificamos si el usuario esta seguro de eliminar el registro
     if decision != 'yes':
         return
 
     selectedItem = my_tree.selection()[0]
-    cedula = str(my_tree.item(selectedItem)['values'][0])
-
+    cedula = my_tree.selection()[1]
+    name = my_tree.selection()[2]
+    register_id = str(my_tree.item(selectedItem)['values'][0])
+    print(f"{cedula} {name}")    
     try:
         with connection() as conn:
             cursor = conn.cursor()
             sql = "DELETE FROM reg WHERE cedula = %s"
-            cursor.execute(sql, (cedula,))
+            cursor.execute(sql, (register_id,))
             conn.commit()
             messagebox.showinfo("", "Se elimino el registro correctamente")
             refreshTable(my_tree)
