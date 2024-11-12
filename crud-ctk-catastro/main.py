@@ -20,6 +20,7 @@ def rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
 window = ctk.CTk()
 window.title("CRUD Catastro")
 window.geometry("1330x600")
+#window.resizable(width=False, height=False)
 
 myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary st
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -30,7 +31,7 @@ frame = ctk.CTkFrame(window)
 frame.pack(fill="x", padx=10, pady=10)
 frame.grid_columnconfigure(6, weight=1)
 
-# Buttons style
+# Estilo 
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 

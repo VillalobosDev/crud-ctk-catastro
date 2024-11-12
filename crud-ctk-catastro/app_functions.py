@@ -147,6 +147,8 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
             refreshTable(my_tree, results)
             if not results:  # Si no hay resultados
                 messagebox.showwarning("", "No se encontraron registros para la cédula proporcionada.")
+                results = read()
+                refreshTable(my_tree, results)
             return
 
     except Exception as e:
