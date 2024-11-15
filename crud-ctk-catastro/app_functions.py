@@ -1,7 +1,9 @@
 import customtkinter as ctk
 import pymysql
 from tkinter import messagebox
-import csv
+import csv 
+import sqlite3
+
 
 placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación"]
 button_poppins = ("poppins", 16, "bold") 
@@ -10,11 +12,8 @@ placeholder_poppins = ("poppins", 12, "normal")
 # Funcion para establecer la conexion con la db
 
 def connection():
-    return pymysql.connect(
-        host='localhost',
-        user='root',
-        password='',
-        db='regdb'
+    return sqlite3.connect(
+        'regdb.db'
     )
 
 # Funcion para leer la base de datos
