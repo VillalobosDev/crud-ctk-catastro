@@ -65,6 +65,9 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
 
     # Verificamos si todos los campos estan llenos
 
+    # Comentado ya que algunos registros no llevan todos los campos y aún no tenemos respuesta de cuales
+    # Son imprecindibles
+
     #if not all([cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion]):
        # messagebox.showwarning("", "Llena todos los formularios")
         #return
