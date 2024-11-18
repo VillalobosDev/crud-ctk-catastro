@@ -39,6 +39,7 @@ def refreshTable(my_tree, results=None):
     # Donde results usualmente en un read() de la db
     
     if results:
+        print(f'Results type: {type(results)}')
         for i, array in enumerate(results):
             tag = "evenrow" if i % 2 == 0 else "oddrow" # Altenar los colores establecidos en my_tree.tag_configure
             my_tree.insert(parent='', index='end', text="", values=array, tag=tag)
@@ -142,7 +143,7 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
                      FROM reg WHERE cedula = ? ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql, (cedula,))
 
-            results = cursor.fetchall
+            results = cursor.fetchall()
             refreshTable(my_tree, results)
             if not results:  # Si no hay resultados
                 messagebox.showwarning("", "No se encontraron registros para la cédula proporcionada.")
