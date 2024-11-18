@@ -64,9 +64,9 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
 
     # Verificamos si todos los campos estan llenos
 
-    if not all([cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion]):
-        messagebox.showwarning("", "Llena todos los formularios")
-        return
+    #if not all([cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion]):
+       # messagebox.showwarning("", "Llena todos los formularios")
+        #return
 
     # Si los campos estan llenos guardamos los datos en la db como un nuevo registro
 
@@ -75,7 +75,7 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
             cursor = conn.cursor()
             sql = """INSERT INTO reg (cedula, contribuyente, nombreinmueble, rif, sector, 
                      uso, codcatastral, fechaliquidacion) 
-                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion))
             conn.commit()
 
@@ -107,7 +107,7 @@ def delete(my_tree):
     try:
         with connection() as conn:
             cursor = conn.cursor()
-            sql = "DELETE FROM reg WHERE register_id = %s" # Eliminaremos el registro donde coincida el id registro seleccionado con el de la db
+            sql = "DELETE FROM reg WHERE register_id = ?" # Eliminaremos el registro donde coincida el id registro seleccionado con el de la db
             cursor.execute(sql, (register_id,))
             conn.commit()
             messagebox.showinfo(title="Registro eliminado", message=f"Se elimino el registro de '{name}'-'{cedula}' correctamente") # Pop-up mostrando de quien fue el registro eliminado
@@ -139,7 +139,7 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
 
             # Si se provee una cedula devuelve unicamene que los registros asociados con esa cedula
             sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
-                     FROM reg WHERE cedula = %s ORDER BY fechaliquidacion DESC"""
+                     FROM reg WHERE cedula = ? ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql, (cedula,))
 
             results = cursor.fetchall
@@ -218,7 +218,7 @@ def open_save_popup(my_tree):
 
     # Save button within popup
     def save_popup_data():
-        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, popup_placeholder_array, my_tree)
+        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, my_tree)
         #1messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")  
         popup.destroy()  # Close popup after saving
 
@@ -263,15 +263,15 @@ def open_update_modal(my_tree, placeholderArray):
             sql = '''
             UPDATE reg
             SET 
-            cedula = %s,
-            contribuyente = %s,
-            nombreinmueble = %s,
-            rif = %s,
-            sector = %s,
-            uso = %s,
-            codcatastral = %s,
-            fechaliquidacion = %s
-            WHERE register_id = %s
+            cedula = ?,
+            contribuyente = ?,
+            nombreinmueble = ?,
+            rif = ?,
+            sector = ?,
+            uso = ?,
+            codcatastral = ?,
+            fechaliquidacion = ?
+            WHERE register_id = ?
             '''
             cursor.execute(sql,(*updated_values, my_tree.item(item_id)['values'][0]))
             conn.commit()

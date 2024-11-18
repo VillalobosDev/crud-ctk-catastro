@@ -24,7 +24,7 @@ window.geometry("1330x600")
 
 myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary st
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-window.iconbitmap(r'C:\Github\crud-ctk-catastro\crud-ctk-catastro\img\img.ico')
+#window.iconbitmap(r'C:\Github\crud-ctk-catastro\crud-ctk-catastro\img\img.ico')
 
 # Creado el frame donde iran los botones
 frame = ctk.CTkFrame(window)
