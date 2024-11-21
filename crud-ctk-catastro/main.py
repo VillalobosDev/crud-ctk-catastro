@@ -19,7 +19,7 @@ def rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
 # Creando la ventana
 window = ctk.CTk()
 window.title("CRUD Catastro")
-window.geometry("1330x600")
+window.geometry("1080x720")
 #window.resizable(width=False, height=False)
 
 myappid = 'mycompany.myproduct.subproduct.version'  # arbitrary st
