@@ -1,32 +1,41 @@
 import customtkinter as ctk
 import pymysql
 from tkinter import messagebox
+from tkinter import ttk
 import csv 
 import sqlite3
 
 
-placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación"]
+placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación", "Pago", "Monto"]
 button_poppins = ("poppins", 16, "bold") 
 placeholder_poppins = ("poppins", 12, "normal") 
 
 # Funcion para establecer la conexion con la db
 
 def connection():
-    return sqlite3.connect(
-        'regdb.db'
-    )
-
-# Funcion para leer la base de datos
+    return sqlite3.connect('./regdb.db')
 
 def read():
-    with connection() as conn:  
-        cursor = conn.cursor()
-        sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, 
-                 uso, codcatastral, fechaliquidacion FROM reg ORDER BY fechaliquidacion DESC"""
-        cursor.execute(sql)
-        results = cursor.fetchall()
-    return results
+    try:
+        with connection() as conn:
+            cursor = conn.cursor()
+            sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, 
+                     uso, codcatastral, fechaliquidacion, pago, monto FROM reg ORDER BY fechaliquidacion DESC"""
+            cursor.execute(sql)
+            results = cursor.fetchall()
 
+            # Check if results are empty
+            if not results:
+                print("No records found.")
+            else:
+                for row in results:
+                    print(row)  # Print each record for debugging
+
+    except sqlite3.Error as e:
+        print(f"SQLite error: {e}")
+        results = []
+
+    return results
 # Funcion para mostrar los registros de la base de datos
 
 def refreshTable(my_tree, results=None):
@@ -50,7 +59,7 @@ def refreshTable(my_tree, results=None):
 
 # Funcion para guardar los datos en la db
 
-def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, my_tree):
+def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, pago, montoEntry, my_tree):
 
     # Obtenemos los datos de los placeholder/entry's
 
@@ -62,6 +71,8 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
     uso = usoEntry.get().strip()
     codcatastral = codcatastralEntry.get().strip()
     fechaliquidacion = fechaliquidacionEntry.get().strip()
+    pago = pago.strip()  # Ensure this is a string
+    monto = montoEntry.get().strip()
 
     # Verificamos si todos los campos estan llenos
 
@@ -78,9 +89,9 @@ def save(cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorE
         with connection() as conn:
             cursor = conn.cursor()
             sql = """INSERT INTO reg (cedula, contribuyente, nombreinmueble, rif, sector, 
-                     uso, codcatastral, fechaliquidacion) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
-            cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion))
+                     uso, codcatastral, fechaliquidacion, pago, monto) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            cursor.execute(sql, (cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion, pago, monto))
             conn.commit()
 
         results = read() # Llamamos los registros de la bd para mostrarlos en el tree.
@@ -142,7 +153,7 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
                 return
 
             # Si se provee una cedula devuelve unicamene que los registros asociados con esa cedula
-            sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
+            sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion, pago, monto 
                      FROM reg WHERE cedula = ? ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql, (cedula,))
 
@@ -187,7 +198,7 @@ def open_save_popup(my_tree):
     window = ctk.CTk()
     popup = ctk.CTkToplevel(window)
     popup.title("Nuevo Registro")
-    popup.geometry("400x400")
+    popup.geometry("400x500")
     popup.resizable(width=False,height=False)
 
     # Create entry fields in the popup window
@@ -215,14 +226,20 @@ def open_save_popup(my_tree):
     fechaliquidacion_popup = ctk.CTkEntry(popup, placeholder_text="Fecha Liquidación", font=placeholder_poppins, width=380)
     fechaliquidacion_popup.pack(padx=5, pady=5)
 
-    # Array of popup entries to pass to save function
-    popup_placeholder_array = [
-        cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup
-    ]
+    pago_frame = ctk.CTkFrame(popup)  # Create a frame to hold the dropdown
+    pago_frame.pack(padx=5, pady=5, fill="x")  # Pack the frame with a fill option if needed
+
+    pago_options = ["Yes", "No"]  # You can add other options here if needed
+    pago_dropdown = ctk.CTkOptionMenu(pago_frame, values=pago_options, font=placeholder_poppins)
+    pago_dropdown.pack(padx=5, pady=5, side="left")
+
+    monto_popup = ctk.CTkEntry(popup, placeholder_text="Monto", font=placeholder_poppins, width=380)
+    monto_popup.pack(padx=5, pady=5)
+
 
     # Save button within popup
     def save_popup_data():
-        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, my_tree)
+        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, pago_dropdown.get(), monto_popup, my_tree)
         #1messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")  
         popup.destroy()  # Close popup after saving
 
@@ -275,6 +292,8 @@ def open_update_modal(my_tree, placeholderArray):
             uso = ?,
             codcatastral = ?,
             fechaliquidacion = ?
+            pago = ?
+            monto = ?
             WHERE register_id = ?
             '''
             cursor.execute(sql,(*updated_values, my_tree.item(item_id)['values'][0]))

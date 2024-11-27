@@ -84,8 +84,16 @@ style.configure("Custom.Treeview.Heading", font=("Poppins", 14, "bold"))
 my_tree = ttk.Treeview(frame_tree, style="Custom.Treeview", show="headings")
 my_tree.pack(pady=10, padx=10, fill="both", expand=True)
 
+# Create the horizontal scrollbar
+horizontal_scrollbar = ttk.Scrollbar(frame_tree, orient="horizontal", command=my_tree.xview)
+
+# Configure the Treeview to use the horizontal scrollbar
+my_tree.configure(xscrollcommand=horizontal_scrollbar.set)
+
+horizontal_scrollbar.pack(side="bottom", fill="x")
+
 # Definiendo las columnas 
-my_tree['columns'] = ('register_id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion')
+my_tree['columns'] = ('register_id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion', 'pago', 'monto')
 
 # Formateando columnas
 for col in my_tree['columns']:
