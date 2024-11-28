@@ -2,8 +2,10 @@ import customtkinter as ctk
 import pymysql
 from tkinter import messagebox
 from tkinter import ttk
+from tkinter import Toplevel
 import csv 
 import sqlite3
+from tkcalendar import Calendar
 
 
 placeholder_texts = ["Cedula", "Contribuyente", "Nombre Inmueble", "RIF", "Sector", "Cod Catastral", "Fecha Liquidación", "Pago", "Monto"]
@@ -13,7 +15,7 @@ placeholder_poppins = ("poppins", 12, "normal")
 # Funcion para establecer la conexion con la db
 
 def connection():
-    return sqlite3.connect('./regdb.db')
+    return sqlite3.connect('regdb.db')
 
 def read():
     try:
@@ -23,13 +25,6 @@ def read():
                      uso, codcatastral, fechaliquidacion, pago, monto FROM reg ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql)
             results = cursor.fetchall()
-
-            # Check if results are empty
-            if not results:
-                print("No records found.")
-            else:
-                for row in results:
-                    print(row)  # Print each record for debugging
 
     except sqlite3.Error as e:
         print(f"SQLite error: {e}")
@@ -48,7 +43,7 @@ def refreshTable(my_tree, results=None):
     # Donde results usualmente en un read() de la db
     
     if results:
-        print(f'Results type: {type(results)}')
+#        print(f'Results type: {type(results)}')
         for i, array in enumerate(results):
             tag = "evenrow" if i % 2 == 0 else "oddrow" # Altenar los colores establecidos en my_tree.tag_configure
             my_tree.insert(parent='', index='end', text="", values=array, tag=tag)
@@ -145,7 +140,17 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
 
             # Si no se provee la cedula, devuelve todos los registro de la db
             if not cedula:
-                sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion 
+                sql = """SELECT register_id,
+                                     cedula,
+                              contribuyente,
+                             nombreinmueble,
+                                        rif,
+                                     sector, 
+                                        uso, 
+                               codcatastral, 
+                           fechaliquidacion,
+                                       pago,
+                                       monto 
                          FROM reg ORDER BY fechaliquidacion DESC"""
                 cursor.execute(sql)
                 results = cursor.fetchall()
@@ -153,7 +158,17 @@ def find(my_tree, cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry
                 return
 
             # Si se provee una cedula devuelve unicamene que los registros asociados con esa cedula
-            sql = """SELECT register_id, cedula, contribuyente, nombreinmueble, rif, sector, uso, codcatastral, fechaliquidacion, pago, monto 
+            sql = """SELECT register_id,
+                                 cedula,
+                          contribuyente,
+                         nombreinmueble,
+                                    rif,
+                                 sector, 
+                                    uso, 
+                           codcatastral, 
+                       fechaliquidacion,
+                                   pago,
+                                   monto 
                      FROM reg WHERE cedula = ? ORDER BY fechaliquidacion DESC"""
             cursor.execute(sql, (cedula,))
 
@@ -193,58 +208,154 @@ def exportExcel():
 ######################################### Ventana modal para guardar###########################################################
 ###########################################################################################################################################
 
+def open_calendar_popup(entry_widget):
+    """Open a calendar popup to select a date."""
+    calendar_popup = Toplevel()
+    calendar_popup.title("Seleccionar Fecha")
+    calendar_popup.geometry("300x300")
+    calendar_popup.resizable(width=False, height=False)
+
+    # Add Calendar widget
+    calendar = Calendar(calendar_popup, date_pattern="dd-mm-yyyy")  # Use desired format
+    calendar.pack(padx=10, pady=10)
+
+    # Function to handle date selection
+    def select_date():
+        selected_date = calendar.get_date()
+        entry_widget.delete(0, "end")  # Clear existing value in the entry
+        entry_widget.insert(0, selected_date)  # Insert selected date
+        calendar_popup.destroy()  # Close the calendar popup
+
+    # Add button to confirm date selection
+    select_button = ctk.CTkButton(calendar_popup, text="Seleccionar", command=select_date)
+    select_button.pack(pady=10)
+
+# def open_save_popup(my_tree):
+#     """Open a popup window to input data for a new register."""
+#     window = ctk.CTk()
+#     popup = ctk.CTkToplevel(window)
+#     popup.title("Nuevo Registro")
+#     popup.geometry("400x500")
+#     popup.resizable(width=False,height=False)
+
+#     # Create entry fields in the popup window
+#     cedula_popup = ctk.CTkEntry(popup, placeholder_text="Cedula", font=placeholder_poppins, width=380)
+#     cedula_popup.pack(padx=5, pady=5)
+
+#     contribuyente_popup = ctk.CTkEntry(popup, placeholder_text="Contribuyente", font=placeholder_poppins, width=380)
+#     contribuyente_popup.pack(padx=5, pady=5)
+
+#     nombreinmueble_popup = ctk.CTkEntry(popup, placeholder_text="Nombre Inmueble", font=placeholder_poppins, width=380)
+#     nombreinmueble_popup.pack(padx=5, pady=5)
+
+#     rif_popup = ctk.CTkEntry(popup, placeholder_text="RIF", font=placeholder_poppins, width=380)
+#     rif_popup.pack(padx=5, pady=5)
+
+#     sector_popup = ctk.CTkEntry(popup, placeholder_text="Sector", font=placeholder_poppins, width=380)
+#     sector_popup.pack(padx=5, pady=5)
+
+#     uso_popup = ctk.CTkEntry(popup, placeholder_text="Uso", font=placeholder_poppins, width=380)
+#     uso_popup.pack(padx=5, pady=5)
+
+#     codcatastral_popup = ctk.CTkEntry(popup, placeholder_text="Cod Catastral", font=placeholder_poppins, width=380)
+#     codcatastral_popup.pack(padx=5, pady=5)
+
+#     fechaliquidacion_entry = ctk.CTkEntry(popup, placeholder_text="Fecha Liquidación", font=placeholder_poppins, width=300)
+#     fechaliquidacion_entry.pack(padx=5, pady=5, side="left")
+
+#     # Add calendar button
+#     calendar_button = ctk.CTkButton(popup, text="📅", width=50, command=lambda: open_calendar_popup(fechaliquidacion_entry))
+#     calendar_button.pack(padx=5, pady=5, side="right")
+
+#     pago_frame = ctk.CTkFrame(popup)  # Create a frame to hold the dropdown
+#     pago_frame.pack(padx=5, pady=5, fill="x")  # Pack the frame with a fill option if needed
+
+#     pago_options = ["Si", "No"]  # You can add other options here if needed
+#     pago_dropdown = ctk.CTkOptionMenu(pago_frame, values=pago_options, font=placeholder_poppins)
+#     pago_dropdown.pack(padx=5, pady=5, side="left")
+
+#     monto_popup = ctk.CTkEntry(popup, placeholder_text="Monto", font=placeholder_poppins, width=380)
+#     monto_popup.pack(padx=5, pady=5)
+
+
+#     # Save button within popup
+#     def save_popup_data():
+#         selected_date = fechaliquidacion_entry.get()
+#         save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, selected_date, pago_dropdown.get(), monto_popup, my_tree)
+#         #1messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")  
+#         popup.destroy()  # Close popup after saving
+
+#     save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins, width=380)
+#     save_button.pack(pady=10)
+
 def open_save_popup(my_tree):
     """Open a popup window to input data for a new register."""
     window = ctk.CTk()
     popup = ctk.CTkToplevel(window)
     popup.title("Nuevo Registro")
-    popup.geometry("400x500")
-    popup.resizable(width=False,height=False)
+    popup.geometry("400x600")
+    popup.resizable(width=False, height=False)
 
-    # Create entry fields in the popup window
-    cedula_popup = ctk.CTkEntry(popup, placeholder_text="Cedula", font=placeholder_poppins, width=380)
-    cedula_popup.pack(padx=5, pady=5)
+    # Create frame for entry fields
+    entry_frame = ctk.CTkFrame(popup)
+    entry_frame.pack(padx=10, pady=10, fill="x")
 
-    contribuyente_popup = ctk.CTkEntry(popup, placeholder_text="Contribuyente", font=placeholder_poppins, width=380)
-    contribuyente_popup.pack(padx=5, pady=5)
+    # Create entry fields in the frame
+    cedula_popup = ctk.CTkEntry(entry_frame, placeholder_text="Cedula", font=placeholder_poppins, width=380)
+    cedula_popup.grid(row=0, column=0, pady=5)
 
-    nombreinmueble_popup = ctk.CTkEntry(popup, placeholder_text="Nombre Inmueble", font=placeholder_poppins, width=380)
-    nombreinmueble_popup.pack(padx=5, pady=5)
+    contribuyente_popup = ctk.CTkEntry(entry_frame, placeholder_text="Contribuyente", font=placeholder_poppins, width=380)
+    contribuyente_popup.grid(row=1, column=0, pady=5)
 
-    rif_popup = ctk.CTkEntry(popup, placeholder_text="RIF", font=placeholder_poppins, width=380)
-    rif_popup.pack(padx=5, pady=5)
+    nombreinmueble_popup = ctk.CTkEntry(entry_frame, placeholder_text="Nombre Inmueble", font=placeholder_poppins, width=380)
+    nombreinmueble_popup.grid(row=2, column=0, pady=5)
 
-    sector_popup = ctk.CTkEntry(popup, placeholder_text="Sector", font=placeholder_poppins, width=380)
-    sector_popup.pack(padx=5, pady=5)
+    rif_popup = ctk.CTkEntry(entry_frame, placeholder_text="RIF", font=placeholder_poppins, width=380)
+    rif_popup.grid(row=3, column=0, pady=5)
 
-    uso_popup = ctk.CTkEntry(popup, placeholder_text="Uso", font=placeholder_poppins, width=380)
-    uso_popup.pack(padx=5, pady=5)
+    sector_popup = ctk.CTkEntry(entry_frame, placeholder_text="Sector", font=placeholder_poppins, width=380)
+    sector_popup.grid(row=4, column=0, pady=5)
 
-    codcatastral_popup = ctk.CTkEntry(popup, placeholder_text="Cod Catastral", font=placeholder_poppins, width=380)
-    codcatastral_popup.pack(padx=5, pady=5)
+    uso_popup = ctk.CTkEntry(entry_frame, placeholder_text="Uso", font=placeholder_poppins, width=380)
+    uso_popup.grid(row=5, column=0, pady=5)
 
-    fechaliquidacion_popup = ctk.CTkEntry(popup, placeholder_text="Fecha Liquidación", font=placeholder_poppins, width=380)
-    fechaliquidacion_popup.pack(padx=5, pady=5)
+    codcatastral_popup = ctk.CTkEntry(entry_frame, placeholder_text="Cod Catastral", font=placeholder_poppins, width=380)
+    codcatastral_popup.grid(row=6, column=0, pady=5)
 
-    pago_frame = ctk.CTkFrame(popup)  # Create a frame to hold the dropdown
-    pago_frame.pack(padx=5, pady=5, fill="x")  # Pack the frame with a fill option if needed
+    
 
-    pago_options = ["Yes", "No"]  # You can add other options here if needed
+    # Create frame for calendar button
+    calendar_frame = ctk.CTkFrame(popup)
+    calendar_frame.pack(padx=5, pady=5, fill="x")
+
+    fechaliquidacion_entry = ctk.CTkEntry(calendar_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins, width=300)
+    fechaliquidacion_entry.pack(padx=5, pady=5, side='left')
+
+    calendar_button = ctk.CTkButton(calendar_frame, text="📅", width=50, command=lambda: open_calendar_popup(fechaliquidacion_entry))
+    calendar_button.pack(pady=5, fill="x")
+
+    
+
+    # Create frame for payment dropdown
+    pago_frame = ctk.CTkFrame(popup)
+    pago_frame.pack(padx=10, pady=10, fill="x")
+
+    pago_options = ["Si", "No"]
     pago_dropdown = ctk.CTkOptionMenu(pago_frame, values=pago_options, font=placeholder_poppins)
     pago_dropdown.pack(padx=5, pady=5, side="left")
 
     monto_popup = ctk.CTkEntry(popup, placeholder_text="Monto", font=placeholder_poppins, width=380)
     monto_popup.pack(padx=5, pady=5)
 
-
     # Save button within popup
     def save_popup_data():
-        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, fechaliquidacion_popup, pago_dropdown.get(), monto_popup, my_tree)
-        #1messagebox.showinfo(title="Ventana Guardado", message="El registro se guardo existosamente")  
+        selected_date = fechaliquidacion_entry.get()
+        save(cedula_popup, contribuyente_popup, nombreinmueble_popup, rif_popup, sector_popup, uso_popup, codcatastral_popup, selected_date, pago_dropdown.get(), monto_popup, my_tree)
         popup.destroy()  # Close popup after saving
 
     save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins, width=380)
     save_button.pack(pady=10)
+
 
 ###########################################################################################################################################
 ######################################### Pop-up update window / Modal###########################################################
@@ -263,16 +374,16 @@ def open_update_modal(my_tree, placeholderArray):
     # Create modal window for updating
     modal = ctk.CTkToplevel()
     modal.title("Actualizar registro")
-    modal.geometry("400x400")
+    modal.geometry("400x500")
 
 
     # Create input fields with existing data
     entries = []
     for i, placeholder in enumerate(placeholderArray):
-        entry = ctk.CTkEntry(modal, placeholder_text=placeholder.get())
-        entry.insert(0, values[i + 1])  # +1 to skip register_id
-        entry.pack(pady=5)
-        entries.append(entry)
+            entry = ctk.CTkEntry(modal, placeholder_text=placeholder.get())
+            entry.insert(0, values[i + 1])  # +1 to skip register_id
+            entry.pack(pady=5)
+            entries.append(entry)
 
     # Update button within modal
     def update_record():
@@ -291,8 +402,8 @@ def open_update_modal(my_tree, placeholderArray):
             sector = ?,
             uso = ?,
             codcatastral = ?,
-            fechaliquidacion = ?
-            pago = ?
+            fechaliquidacion = ?,
+            pago = ?,
             monto = ?
             WHERE register_id = ?
             '''

@@ -17,6 +17,8 @@ def rectangle(canvas, x0, y0, x1, y1, r, **kwargs):
     return canvas.create_polygon(points, **kwargs, smooth=True)
 
 # Creando la ventana
+ctk.set_appearance_mode('dark')
+ctk.set_default_color_theme('dark-blue')
 window = ctk.CTk()
 window.title("CRUD Catastro")
 window.geometry("1080x720")
@@ -53,7 +55,12 @@ codcatastralEntry = ctk.CTkEntry(input_frame, placeholder_text="Cod Catastral", 
 
 fechaliquidacionEntry = ctk.CTkEntry(input_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins)
 
-placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry]
+pagoEntry = ctk.CTkOptionMenu(input_frame, values=['Si', 'No'], font=placeholder_poppins)
+#pagoEntry = pagoEntry.get()
+
+montoEntry = ctk.CTkEntry(frame, placeholder_text="Monto", font=placeholder_poppins)
+
+placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, pagoEntry, montoEntry]
 
 # Frame para el treeview (Vista de los registros)
 frame_tree = ctk.CTkFrame(window, fg_color='white', width=580, height=360)
@@ -93,7 +100,7 @@ my_tree.configure(xscrollcommand=horizontal_scrollbar.set)
 horizontal_scrollbar.pack(side="bottom", fill="x")
 
 # Definiendo las columnas 
-my_tree['columns'] = ('register_id', 'cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion', 'pago', 'monto')
+my_tree['columns'] = ('ID','cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion', 'pago', 'monto')
 
 # Formateando columnas
 for col in my_tree['columns']:
