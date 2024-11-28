@@ -298,7 +298,7 @@ def open_save_popup(my_tree):
 
     # Create frame for entry fields
     entry_frame = ctk.CTkFrame(popup)
-    entry_frame.pack(padx=10, pady=10, fill="x")
+    entry_frame.pack(padx=10, fill="x")
 
     # Create entry fields in the frame
     cedula_popup = ctk.CTkEntry(entry_frame, placeholder_text="Cedula", font=placeholder_poppins, width=380)
@@ -326,7 +326,7 @@ def open_save_popup(my_tree):
 
     # Create frame for calendar button
     calendar_frame = ctk.CTkFrame(popup)
-    calendar_frame.pack(padx=5, pady=5, fill="x")
+    calendar_frame.pack(pady=5, padx=10, fill="x")
 
     fechaliquidacion_entry = ctk.CTkEntry(calendar_frame, placeholder_text="Fecha Liquidación", font=placeholder_poppins, width=300)
     fechaliquidacion_entry.pack(padx=5, pady=5, side='left')
@@ -338,14 +338,24 @@ def open_save_popup(my_tree):
 
     # Create frame for payment dropdown
     pago_frame = ctk.CTkFrame(popup)
-    pago_frame.pack(padx=10, pady=10, fill="x")
+    pago_frame.pack(pady=5, padx=10, fill="x")
 
+    # Create the label
+    pagonopago = ctk.CTkLabel(pago_frame, text="PAGO O NO PAGO", font=button_poppins)
+    pagonopago.pack(side="left", padx=10, pady=5)
+
+    # Create the dropdown menu
     pago_options = ["Si", "No"]
     pago_dropdown = ctk.CTkOptionMenu(pago_frame, values=pago_options, font=placeholder_poppins)
-    pago_dropdown.pack(padx=5, pady=5, side="left")
+    pago_dropdown.pack(side="left", fill="x", expand=True, padx=5, pady=5)
 
-    monto_popup = ctk.CTkEntry(popup, placeholder_text="Monto", font=placeholder_poppins, width=380)
-    monto_popup.pack(padx=5, pady=5)
+    monto_frame = ctk.CTkFrame(popup)
+    monto_frame.pack(pady=5, padx=10, fill="x")
+
+    monto_popup = ctk.CTkEntry(monto_frame, placeholder_text="Monto", font=placeholder_poppins, width=190)
+    monto_popup.pack(side="left", padx=5, pady=5, fill="x")
+    monto_popup2 = ctk.CTkEntry(monto_frame, placeholder_text="Monto 2", font=placeholder_poppins, width=190)
+    monto_popup2.pack(side="right", padx=5, pady=5, fill="x")
 
     # Save button within popup
     def save_popup_data():
@@ -354,7 +364,7 @@ def open_save_popup(my_tree):
         popup.destroy()  # Close popup after saving
 
     save_button = ctk.CTkButton(popup, text="Save", command=save_popup_data, font=button_poppins, width=380)
-    save_button.pack(pady=10)
+    save_button.pack(pady=5)
 
 
 ###########################################################################################################################################
