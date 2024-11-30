@@ -294,33 +294,76 @@ def open_save_popup(my_tree):
     popup = ctk.CTkToplevel(window)
     popup.title("Nuevo Registro")
     popup.geometry("400x600")
-    popup.resizable(width=False, height=False)
+    #popup.resizable(width=False, height=False)
+    popup.resizable()
 
     # Create frame for entry fields
-    entry_frame = ctk.CTkFrame(popup)
-    entry_frame.pack(padx=10, fill="x")
+    
+    contribuyente_frame = ctk.CTkFrame(popup)
+    contribuyente_frame.pack(padx=10, pady=5, fill="x")
+    
+    cedula_frame = ctk.CTkFrame(popup)
+    cedula_frame.pack(padx=10, pady=5, fill="x")
+    
+    inmueble_frame = ctk.CTkFrame(popup)
+    inmueble_frame.pack(padx=10, fill="x")
+    
+    # entry_frame = ctk.CTkFrame(popup)
+    # entry_frame.pack(padx=10, pady=5, fill="x")
+    
+    rif_frame = ctk.CTkFrame(popup)
+    rif_frame.pack(padx=10, pady=5,fill="x")
+    
+    sector_frame = ctk.CTkFrame(popup)
+    sector_frame.pack(padx=10, pady=5,fill="x")
+
+    uso_frame = ctk.CTkFrame(popup)
+    uso_frame.pack(padx=10, pady=5,fill="x")
+
+    codcastastral_frame = ctk.CTkFrame(popup)
+    codcastastral_frame.pack(padx=10, pady=5,fill="x")
 
     # Create entry fields in the frame
-    cedula_popup = ctk.CTkEntry(entry_frame, placeholder_text="Cedula", font=placeholder_poppins, width=380)
-    cedula_popup.grid(row=0, column=0, pady=5)
+    contribuyente_values = ["1","2","3"]    
+    contribuyente_indicator = ctk.CTkOptionMenu(contribuyente_frame, values=contribuyente_values, width=56, font=placeholder_poppins)
+    contribuyente_indicator.pack(padx=5, pady=5, side="left")
 
-    contribuyente_popup = ctk.CTkEntry(entry_frame, placeholder_text="Contribuyente", font=placeholder_poppins, width=380)
-    contribuyente_popup.grid(row=1, column=0, pady=5)
+    contribuyente_popup = ctk.CTkEntry(contribuyente_frame, placeholder_text="Contribuyente", font=placeholder_poppins, width=380)
+    # contribuyente_popup.grid(row=0, column=0, pady=5)
+    contribuyente_popup.pack(pady=5, padx=5)
 
-    nombreinmueble_popup = ctk.CTkEntry(entry_frame, placeholder_text="Nombre Inmueble", font=placeholder_poppins, width=380)
-    nombreinmueble_popup.grid(row=2, column=0, pady=5)
+    cedula_popup = ctk.CTkEntry(cedula_frame, placeholder_text="Cedula", font=placeholder_poppins, width=380)
+    cedula_popup.grid(row=1, column=0, pady=5)
+    cedula_popup.pack(pady=5, padx=5)
 
-    rif_popup = ctk.CTkEntry(entry_frame, placeholder_text="RIF", font=placeholder_poppins, width=380)
-    rif_popup.grid(row=3, column=0, pady=5)
+    nombreinmueble_popup = ctk.CTkEntry(inmueble_frame, placeholder_text="Nombre Inmueble", font=placeholder_poppins, width=380)
+    nombreinmueble_popup.grid(pady=5)
+    nombreinmueble_popup.pack(pady=5, padx=5)
 
-    sector_popup = ctk.CTkEntry(entry_frame, placeholder_text="Sector", font=placeholder_poppins, width=380)
-    sector_popup.grid(row=4, column=0, pady=5)
+    rif_values = ["V","E","J","C","G"]    
+    rif_indicator = ctk.CTkOptionMenu(rif_frame, values=rif_values, width=56, font=placeholder_poppins)
+    rif_indicator.pack(padx=5, pady=5, side="left")
 
-    uso_popup = ctk.CTkEntry(entry_frame, placeholder_text="Uso", font=placeholder_poppins, width=380)
-    uso_popup.grid(row=5, column=0, pady=5)
+    rif_popup = ctk.CTkEntry(rif_frame, placeholder_text="RIF", font=placeholder_poppins, width=380)
+    # rif_popup.grid(pady=5)
+    rif_popup.pack(pady=5, padx=5)
 
-    codcatastral_popup = ctk.CTkEntry(entry_frame, placeholder_text="Cod Catastral", font=placeholder_poppins, width=380)
+    sector_popup = ctk.CTkEntry(sector_frame, placeholder_text="Sector", font=placeholder_poppins, width=380)
+    sector_popup.grid(pady=5)
+    sector_popup.pack(pady=5, padx=5)
+
+    uso_options = ["Comercial", "Residencial"]
+
+    uso_label = ctk.CTkLabel(uso_frame, text="TIPO DE USO", font=button_poppins)
+    uso_label.pack(side="left", padx=10, pady=5)
+
+    uso_popup = ctk.CTkOptionMenu(uso_frame, values=uso_options, font=placeholder_poppins )
+    # uso_popup.grid(pady=5)
+    uso_popup.pack(padx=5, pady=5, fill="x", expand=True, side="right")
+
+    codcatastral_popup = ctk.CTkEntry(codcastastral_frame, placeholder_text="Cod Catastral", font=placeholder_poppins, width=380)
     codcatastral_popup.grid(row=6, column=0, pady=5)
+    codcatastral_popup.pack(pady=5, padx=5)
 
     
 
