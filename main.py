@@ -69,7 +69,7 @@ frame_tree.pack(pady=10, padx=10, expand=True, fill="both")
 # Definiendo botones con sus comandos
 buttons = [
     ("Agregar", lambda: open_save_popup(my_tree)),
-    ("Actualizar", lambda: open_update_modal(my_tree, placeholderArray)),
+    ("Editar", lambda: open_update_modal(my_tree, placeholderArray)),
     ("Eliminar", lambda: delete(my_tree)),
     ("Exportar a Excel", lambda: exportExcel())
 ]
