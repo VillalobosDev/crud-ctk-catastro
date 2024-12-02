@@ -60,7 +60,10 @@ pagoEntry = ctk.CTkOptionMenu(input_frame, values=['Si', 'No'], font=placeholder
 
 montoEntry = ctk.CTkEntry(frame, placeholder_text="Monto", font=placeholder_poppins)
 
-placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, pagoEntry, montoEntry]
+montoEntry2 = ctk.CTkEntry(frame, placeholder_text="Monto", font=placeholder_poppins)
+
+montototal = ctk.CTkEntry(frame, placeholder_text="Monto", font=placeholder_poppins)
+placeholderArray = [cedulaEntry, contribuyenteEntry, nombreinmuebleEntry, rifEntry, sectorEntry, usoEntry, codcatastralEntry, fechaliquidacionEntry, pagoEntry, montoEntry, montoEntry2, montototal]
 
 # Frame para el treeview (Vista de los registros)
 frame_tree = ctk.CTkFrame(window, fg_color='white', width=580, height=360)
@@ -100,7 +103,7 @@ my_tree.configure(xscrollcommand=horizontal_scrollbar.set)
 horizontal_scrollbar.pack(side="bottom", fill="x")
 
 # Definiendo las columnas 
-my_tree['columns'] = ('ID','cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion', 'pago', 'monto')
+my_tree['columns'] = ('ID','cedula', 'contribuyente', 'nombreinmueble', 'rif', 'sector', 'uso', 'codcatastral', 'fechaliquidacion', 'pago', 'monto 1', 'monto 2', 'monto total')
 
 # Formateando columnas
 for col in my_tree['columns']:
@@ -117,15 +120,19 @@ canvas.place(x=0, y=0)  # Posicionamos el canvas
 rectangle(canvas, 10, 10, 0, 0, r=5, fill='lightgray', outline='black')
 
 # Llamamos los registros de la base de datos
-with connection() as conn:
-    cursor = conn.cursor()
-    sql = '''
-    SELECT * FROM reg ORDER BY fechaliquidacion DESC   
-    '''
-    cursor.execute(sql)
-    results = cursor.fetchall()
+try:
+    with connection() as conn:
+        cursor = conn.cursor()
+        sql = '''
+        SELECT * FROM reg ORDER BY fechaliquidacion DESC   
+        '''
+        cursor.execute(sql)
+        results = cursor.fetchall()
 
-    refreshTable(my_tree, results)
+        refreshTable(my_tree, results)
+
+except Exception as e:
+    print(e)
 
 window.mainloop()
 
